@@ -1,0 +1,868 @@
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (29.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='Postgrest'*/[0m
+  [1m[35m (10.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (4.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (8.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (6.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-17 11:17:29.178200', '2026-06-17 11:17:29.178202') RETURNING "key" /*application='Postgrest'*/[0m
+Migrating to CreateUsers (20260617111717)
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='Postgrest'*/[0m
+  [1m[35m (12.0ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "last_name" character varying NOT NULL, "first_name" character varying NOT NULL, "middle_name" character varying, "birth_date" date NOT NULL, "gender" character varying NOT NULL, "mother_id" bigint, "father_id" bigint, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='Postgrest'*/[0m
+  [1m[35m (2.8ms)[0m  [1m[35mALTER TABLE "users" ADD CONSTRAINT "fk_rails_1b87a4d46e"
+FOREIGN KEY ("mother_id")
+  REFERENCES "users" ("id")
+ NOT VALID /*application='Postgrest'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mALTER TABLE "users" ADD CONSTRAINT "fk_rails_05062a0330"
+FOREIGN KEY ("father_id")
+  REFERENCES "users" ("id")
+ NOT VALID /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.9ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617111717') RETURNING "version" /*application='Postgrest'*/[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT /*application='Postgrest'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT pg_advisory_unlock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35mSQL (0.7ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35m (106.0ms)[0m  [1m[35mCREATE DATABASE "postgrest" ENCODING = 'unicode' /*application='Postgrest'*/[0m
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Postgrest'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT pg_advisory_unlock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mActiveRecord::SchemaMigration Load (10.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Delete All (2.5ms)[0m  [1m[31mDELETE FROM "users" /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Bulk Insert (17.6ms)[0m  [1m[32mINSERT INTO "users" ("first_name","last_name","middle_name","birth_date","gender","mother_id","father_id","created_at","updated_at") VALUES ('Максим', 'Дмитриев', 'Владимирович', '1962-01-21', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Семён', 'Третьяков', 'Николаевич', '1971-11-04', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Маргарита', 'Рожков', 'Дмитриевна', '1989-04-13', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Зоя', 'Горбачев', 'Михайловна', '1995-02-11', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Дмитрий', 'Герасимов', 'Евгеньевич', '1957-11-29', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Борис', 'Рожков', 'Андреевич', '1975-11-10', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Альберт', 'Сафонова', 'Николаевич', '1963-09-23', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Андрей', 'Рожкова', 'Иванович', '1961-03-14', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Екатерина', 'Шаров', 'Александровна', '1976-12-03', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Маргарита', 'Игнатьев', 'Дмитриевна', '1957-01-22', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Евгения', 'Медведев', 'Михайловна', '1977-02-03', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Анжела', 'Андреев', 'Сергеевна', '1987-01-15', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Лаврентий', 'Семенова', NULL, '2006-05-05', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Аркадий', 'Жданов', 'Сергеевич', '1975-03-30', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Александр', 'Никонов', 'Евгеньевич', '1993-10-16', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Валентин', 'Потапова', 'Александрович', '1964-07-10', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Дарья', 'Красильников', 'Сергеевна', '1992-04-08', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Василий', 'Кононов', 'Николаевич', '1988-04-22', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Любовь', 'Савельева', 'Сергеевна', '1980-10-16', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Макар', 'Артемьев', 'Дмитриевич', '1979-01-05', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Анна', 'Бирюкова', 'Дмитриевна', '1994-11-28', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Нина', 'Бобылев', 'Николаевна', '1959-02-03', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Егор', 'Власов', NULL, '1960-12-30', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Дарья', 'Александрова', 'Николаевна', '1960-12-05', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Марина', 'Мухина', 'Алексеевна', '1972-11-15', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Олег', 'Матвеева', 'Андреевич', '1957-07-20', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Виктор', 'Калинин', 'Сергеевич', '1967-02-01', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Артём', 'Соловьева', 'Михайлович', '1993-07-13', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Клавдия', 'Жуков', 'Николаевна', '2005-06-17', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Эдуард', 'Сергеева', NULL, '1983-11-09', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Илья', 'Панфилова', NULL, '1976-08-27', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Николай', 'Колесников', 'Александрович', '1982-12-19', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Анатолий', 'Гусев', 'Андреевич', '1985-10-09', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Алина', 'Филиппов', NULL, '1978-01-11', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Лариса', 'Игнатова', 'Владимировна', '1977-08-02', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Валентина', 'Романова', 'Евгеньевна', '2006-02-05', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Антонида', 'Морозов', 'Сергеевна', '1967-06-10', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Даниил', 'Юдин', NULL, '2005-08-05', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Раиса', 'Русакова', 'Сергеевна', '1983-09-05', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Борис', 'Зиновьева', 'Иванович', '1966-06-02', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Валентин', 'Никитин', 'Николаевич', '1963-11-18', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Семён', 'Фомина', 'Михайлович', '2004-02-10', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Валентина', 'Денисова', 'Ивановна', '1966-04-29', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Валентина', 'Маслова', 'Владимировна', '1988-12-14', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Никита', 'Голубева', 'Евгеньевич', '1958-03-14', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Вячеслав', 'Харитонова', 'Иванович', '1989-03-31', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Виктор', 'Поляков', 'Сергеевич', '1987-04-16', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Николай', 'Архипова', 'Иванович', '2000-01-22', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Никита', 'Селезнева', 'Дмитриевич', '1975-03-09', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Игнатий', 'Устинова', 'Николаевич', '1965-11-30', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Дмитрий', 'Ефимова', NULL, '1961-06-24', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Илья', 'Иванова', 'Михайлович', '2003-10-02', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Тамара', 'Данилова', 'Николаевна', '1993-12-16', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Анастасия', 'Филиппова', 'Владимировна', '1960-07-13', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Татьяна', 'Кабанов', 'Сергеевна', '1983-01-02', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Александра', 'Филатова', 'Алексеевна', '1990-11-10', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Вера', 'Титова', NULL, '1974-02-23', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Андрей', 'Кошелева', NULL, '1977-03-07', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Виталий', 'Бобылев', 'Дмитриевич', '1975-10-17', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Татьяна', 'Казакова', 'Сергеевна', '1963-02-12', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Елизавета', 'Кудрявцева', 'Николаевна', '1977-02-27', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Эдуард', 'Симонов', 'Владимирович', '1997-11-20', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Наталья', 'Селиверстов', 'Николаевна', '2002-09-10', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Матвей', 'Нестеров', 'Николаевич', '1999-06-23', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Лидия', 'Карпова', 'Владимировна', '2000-08-28', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Антонида', 'Силина', 'Александровна', '1997-04-23', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Анжела', 'Евдокимов', 'Андреевна', '2002-10-05', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Евгения', 'Большаков', 'Михайловна', '1997-11-24', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Ангелина', 'Якушев', NULL, '1986-09-24', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Римма', 'Молчанова', 'Владимировна', '1991-01-16', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Василиса', 'Миронова', 'Евгеньевна', '1963-01-16', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Матвей', 'Никитин', NULL, '1982-01-24', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Варвара', 'Якушева', 'Евгеньевна', '1972-03-02', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Мария', 'Копылов', 'Ивановна', '1977-04-08', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Ульяна', 'Дементьева', 'Алексеевна', '1993-01-31', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Григорий', 'Анисимов', 'Михайлович', '1995-11-07', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Денис', 'Баранова', 'Сергеевич', '1999-11-25', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Оксана', 'Хохлова', 'Евгеньевна', '1975-11-09', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Даниил', 'Самсонов', 'Александрович', '1982-08-20', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Василий', 'Тимофеева', 'Николаевич', '1979-02-19', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Антон', 'Тарасов', 'Иванович', '1967-10-12', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Клавдия', 'Туров', 'Сергеевна', '1993-12-06', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Надежда', 'Самойлов', NULL, '1979-03-25', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Мария', 'Киселев', NULL, '1983-09-12', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Ольга', 'Самойлов', 'Михайловна', '1972-12-12', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Алёна', 'Медведев', 'Евгеньевна', '2007-06-23', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Регина', 'Назарова', 'Владимировна', '2006-09-13', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Анастасия', 'Вишняков', 'Александровна', '1962-10-24', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Максим', 'Воронов', 'Евгеньевич', '1977-05-17', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Василиса', 'Сафонов', 'Сергеевна', '1982-04-27', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Вячеслав', 'Королева', 'Александрович', '1961-08-05', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Григорий', 'Вишняков', 'Владимирович', '1968-12-05', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Василий', 'Киселева', 'Владимирович', '1961-03-20', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Леонид', 'Новикова', 'Николаевич', '1962-01-11', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Ирина', 'Королев', 'Владимировна', '1980-08-25', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Григорий', 'Белоусов', 'Андреевич', '1961-12-18', 'male', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Клавдия', 'Петухов', NULL, '1960-04-14', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Дарья', 'Горбачев', 'Михайловна', '1978-09-14', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Клавдия', 'Осипов', 'Владимировна', '1966-12-03', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681'), ('Наталья', 'Петров', 'Николаевна', '1995-07-04', 'female', NULL, NULL, '2026-06-17 11:21:38.951681', '2026-06-17 11:21:38.951681') ON CONFLICT  DO NOTHING RETURNING "id" /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Load (1.2ms)[0m  [1m[34mSELECT "users".* FROM "users" /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.8ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 61 WHERE "users"."id" = 51 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (10.4ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 4 WHERE "users"."id" = 17 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (4.4ms)[0m  [1m[33mUPDATE "users" SET "father_id" = 47 WHERE "users"."id" = 14 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (4.1ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 4, "father_id" = 6 WHERE "users"."id" = 11 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.4ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 37 WHERE "users"."id" = 2 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.1ms)[0m  [1m[33mUPDATE "users" SET "father_id" = 45 WHERE "users"."id" = 84 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.5ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 25, "father_id" = 94 WHERE "users"."id" = 5 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.8ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 44, "father_id" = 30 WHERE "users"."id" = 24 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.6ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 21 WHERE "users"."id" = 77 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (3.5ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 35, "father_id" = 47 WHERE "users"."id" = 99 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (2.1ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 84, "father_id" = 41 WHERE "users"."id" = 34 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.8ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 3 WHERE "users"."id" = 45 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.8ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 78, "father_id" = 18 WHERE "users"."id" = 13 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.8ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 24, "father_id" = 51 WHERE "users"."id" = 76 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 19, "father_id" = 20 WHERE "users"."id" = 68 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.9ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 88, "father_id" = 13 WHERE "users"."id" = 60 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 95, "father_id" = 89 WHERE "users"."id" = 39 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (2.1ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 75 WHERE "users"."id" = 10 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (2.1ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 85, "father_id" = 33 WHERE "users"."id" = 8 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (2.1ms)[0m  [1m[33mUPDATE "users" SET "father_id" = 20 WHERE "users"."id" = 47 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.0ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 57 WHERE "users"."id" = 65 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.8ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 22, "father_id" = 2 WHERE "users"."id" = 56 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 95 WHERE "users"."id" = 38 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 66 WHERE "users"."id" = 83 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.3ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 25, "father_id" = 77 WHERE "users"."id" = 18 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.7ms)[0m  [1m[33mUPDATE "users" SET "mother_id" = 66, "father_id" = 40 WHERE "users"."id" = 46 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Count (1.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "users" WHERE ("users"."mother_id" IS NOT NULL OR "users"."father_id" IS NOT NULL) /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Count (0.8ms)[0m  [1m[34mSELECT COUNT(*) FROM "users" /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (1.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (4.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (2.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Postgrest'*/[0m
+Migrating to CreateCompanies (20260617114143)
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mBEGIN /*application='Postgrest'*/[0m
+  [1m[35m (14.0ms)[0m  [1m[35mCREATE TABLE "companies" ("id" bigserial primary key, "name" character varying, "inn" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617114143') RETURNING "version" /*application='Postgrest'*/[0m
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT /*application='Postgrest'*/[0m
+Migrating to AddCompanyToUsers (20260617114144)
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='Postgrest'*/[0m
+  [1m[35m (2.5ms)[0m  [1m[35mALTER TABLE "users" ADD "company_id" bigint /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260617114144') RETURNING "version" /*application='Postgrest'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT /*application='Postgrest'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_advisory_unlock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (0.8ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (2.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Postgrest'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[34mSELECT pg_advisory_unlock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.9ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.7ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (1.4ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Postgrest'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_advisory_unlock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.7ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.6ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.7ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Postgrest'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_advisory_unlock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.6ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT pg_try_advisory_lock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (4.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (5.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Postgrest'*/[0m
+  [1m[35m (1.5ms)[0m  [1m[34mSELECT pg_advisory_unlock(5686727981709769260) /*application='Postgrest'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.7ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='Postgrest'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO "$user", public /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[36mSeedCompany Delete All (1.9ms)[0m  [1m[31mDELETE FROM "companies" /*application='Postgrest'*/[0m
+  [1m[36mSeedCompany Bulk Insert (6.8ms)[0m  [1m[32mINSERT INTO "companies" ("name","inn","created_at","updated_at") VALUES ('ТСЖ ТрейдСбытТорг', '7938140372', '2026-06-17 11:42:16.578615', '2026-06-17 11:42:16.578662'), ('ЗАО СнабПром', '2002519991', '2026-06-17 11:42:16.578693', '2026-06-17 11:42:16.578697'), ('ЗАО Виктория', '6686165147', '2026-06-17 11:42:16.578726', '2026-06-17 11:42:16.578729'), ('ИП Антонина', '9211746384', '2026-06-17 11:42:16.578748', '2026-06-17 11:42:16.578750'), ('ОАО БрянскПромТорг', '6666982694', '2026-06-17 11:42:16.578784', '2026-06-17 11:42:16.578787'), ('ООО Елизавета', '8892302927', '2026-06-17 11:42:16.578805', '2026-06-17 11:42:16.578807'), ('ЗАО Григорий', '2460883021', '2026-06-17 11:42:16.578827', '2026-06-17 11:42:16.578830'), ('ЗАО ТрейдПромСбыт', '1724855664', '2026-06-17 11:42:16.578855', '2026-06-17 11:42:16.578857'), ('ООО Римма', '1370800983', '2026-06-17 11:42:16.578874', '2026-06-17 11:42:16.578877'), ('ИП Максим', '4185609387', '2026-06-17 11:42:16.578893', '2026-06-17 11:42:16.578896') ON CONFLICT  DO NOTHING RETURNING "id" /*application='Postgrest'*/[0m
+  [1m[36mSeedCompany Pluck (1.9ms)[0m  [1m[34mSELECT "companies"."id" FROM "companies" /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Load (1.6ms)[0m  [1m[34mSELECT "users".* FROM "users" ORDER BY "users"."id" ASC LIMIT 1000 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.3ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 1 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 10 WHERE "users"."id" = 2 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 3 WHERE "users"."id" = 3 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (2.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 3 WHERE "users"."id" = 5 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (3.2ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 6 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.9ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 4 WHERE "users"."id" = 7 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 5 WHERE "users"."id" = 8 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.1ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 10 WHERE "users"."id" = 10 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.9ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 7 WHERE "users"."id" = 13 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 14 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.1ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 2 WHERE "users"."id" = 16 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 6 WHERE "users"."id" = 17 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 2 WHERE "users"."id" = 19 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 8 WHERE "users"."id" = 21 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 8 WHERE "users"."id" = 22 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 10 WHERE "users"."id" = 23 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 6 WHERE "users"."id" = 25 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 26 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 4 WHERE "users"."id" = 27 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 28 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 6 WHERE "users"."id" = 29 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 7 WHERE "users"."id" = 30 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 4 WHERE "users"."id" = 32 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 33 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 4 WHERE "users"."id" = 35 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 3 WHERE "users"."id" = 36 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 5 WHERE "users"."id" = 37 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 38 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 40 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.8ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 7 WHERE "users"."id" = 41 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 7 WHERE "users"."id" = 42 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.4ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 5 WHERE "users"."id" = 43 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.1ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 7 WHERE "users"."id" = 44 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.9ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 6 WHERE "users"."id" = 45 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.3ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 3 WHERE "users"."id" = 48 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.1ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 49 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.2ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 50 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.2ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 2 WHERE "users"."id" = 51 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.0ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 8 WHERE "users"."id" = 52 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.8ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 2 WHERE "users"."id" = 53 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.1ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 7 WHERE "users"."id" = 54 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.4ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 10 WHERE "users"."id" = 55 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (1.2ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 7 WHERE "users"."id" = 56 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 57 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 8 WHERE "users"."id" = 59 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 10 WHERE "users"."id" = 60 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 62 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 2 WHERE "users"."id" = 63 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 2 WHERE "users"."id" = 64 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 8 WHERE "users"."id" = 65 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 3 WHERE "users"."id" = 66 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 5 WHERE "users"."id" = 69 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 6 WHERE "users"."id" = 70 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 2 WHERE "users"."id" = 73 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 74 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 9 WHERE "users"."id" = 76 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 7 WHERE "users"."id" = 80 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 3 WHERE "users"."id" = 81 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 82 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 84 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 5 WHERE "users"."id" = 85 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 4 WHERE "users"."id" = 86 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 5 WHERE "users"."id" = 87 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 88 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 6 WHERE "users"."id" = 90 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 91 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 3 WHERE "users"."id" = 92 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.7ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 6 WHERE "users"."id" = 93 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 2 WHERE "users"."id" = 94 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 1 WHERE "users"."id" = 95 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 6 WHERE "users"."id" = 96 /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Update All (0.6ms)[0m  [1m[33mUPDATE "users" SET "company_id" = 8 WHERE "users"."id" = 97 /*application='Postgrest'*/[0m
+  [1m[36mSeedCompany Count (0.8ms)[0m  [1m[34mSELECT COUNT(*) FROM "companies" /*application='Postgrest'*/[0m
+  [1m[36mSeedUser Count (0.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "users" WHERE "users"."company_id" IS NOT NULL /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (157.3ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.3ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.8ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:71:in 'Postgrest::Relation#to_sql'
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:71:in 'Postgrest::Relation#to_sql'
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:71:in 'Postgrest::Relation#to_sql'
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (115.7ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.2ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (3.8ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+  AND query NOT ILIKE '%pg_stat_statements_reset%'
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:71:in 'Postgrest::Relation#to_sql'
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (97.2ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.8ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (4.4ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+  AND query NOT ILIKE '%pg_stat_statements_reset%'
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:71:in 'Postgrest::Relation#to_sql'
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (90.5ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (1.4ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (3.0ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+  AND query NOT ILIKE '%pg_stat_statements_reset%'
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (11.8ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (5.1ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.5ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+  AND query NOT ILIKE '%pg_stat_statements_reset%'
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (8.9ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (2.2ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (1.5ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+  AND query NOT ILIKE '%pg_stat_statements_reset%'
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (14.5ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (1.8ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (1.7ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+  AND query NOT ILIKE '%pg_stat_statements_reset%'
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (12.0ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (1.7ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (1.5ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+  AND query NOT ILIKE '%pg_stat_statements_reset%'
+ORDER BY calls DESC
+LIMIT 1
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (78.2ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (4.3ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.5ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query NOT ILIKE '%set_config%'
+[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35m (20.3ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (3.5ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  [1m[35m (2.2ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND (query ILIKE 'WITH%' OR query ILIKE 'SELECT%')
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (100.8ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (5.4ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.3ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND (query ILIKE 'WITH%' OR query ILIKE 'SELECT%')
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND (query ILIKE 'WITH%' OR query ILIKE 'SELECT%')
+[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (95.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (5.1ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.9ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35m (31.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (19.5ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  [1m[35m (1.4ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (112.3ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.7ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[34mSELECT queryid::text, calls, LEFT(query, 120) AS q
+FROM pg_stat_statements
+WHERE toplevel = true AND userid = 255699 AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  [1m[35m (10.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (61.6ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.8ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.6ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (92.3ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.8ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  [1m[35m (2.2ms)[0m  [1m[34mSELECT queryid::text, calls, LEFT(query, 150) AS q
+FROM pg_stat_statements
+WHERE toplevel = true AND userid = 255699 AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  [1m[35m (7.5ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  [1m[35m (2.7ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (99.4ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.8ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  [1m[35m (2.7ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true AND userid = 255699 AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (65.8ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.3ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.6ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (97.3ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.9ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  [1m[35m (1.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true AND userid = 255699 AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (99.1ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.3ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (1.7ms)[0m  [1m[34mSELECT query, calls
+FROM pg_stat_statements
+WHERE userid = 255699 AND toplevel = true
+ORDER BY calls DESC
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (123.4ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (1.7ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.7ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.6ms)[0m  [1m[34mSELECT calls, LEFT(query,80) AS q FROM pg_stat_statements WHERE userid = 255699 AND toplevel ORDER BY calls DESC /*application='Postgrest'*/[0m
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+[0m
+  ↳ app/services/postgrest/relation.rb:76:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT calls, LEFT(query,80) AS q FROM pg_stat_statements WHERE userid = 255699 AND toplevel ORDER BY calls DESC[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (111.8ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (1.8ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.4ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.2ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:78:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+[0m
+  ↳ app/services/postgrest/relation.rb:78:in 'Postgrest::Relation#to_sql'
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (91.6ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (1.8ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.9ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35m (2.2ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+  ↳ app/services/postgrest/relation.rb:78:in 'Postgrest::Relation#to_sql'
+  [1m[35m (1.1ms)[0m  [1m[34mSELECT calls, queryid, LEFT(query,60) FROM pg_stat_statements WHERE userid = 255699 ORDER BY calls DESC /*application='Postgrest'*/[0m
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon'[0m
+  ↳ app/services/postgrest/relation.rb:68:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699[0m
+  ↳ app/services/postgrest/relation.rb:70:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+[0m
+  ↳ app/services/postgrest/relation.rb:78:in 'Postgrest::Relation#to_sql'
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT calls, queryid, LEFT(query,60) FROM pg_stat_statements WHERE userid = 255699 ORDER BY calls DESC[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (130.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[34mSELECT queryid::text, calls FROM pg_stat_statements WHERE userid = 255699 /*application='Postgrest'*/[0m
+  [1m[35m (1.9ms)[0m  [1m[34mSELECT queryid::text, calls, query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (136.2ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (4.9ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (3.9ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (1.3ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (0.8ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (135.5ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (1.8ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (2.5ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (119.5ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (1.5ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (27.0ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.7ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (134.3ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.0ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (4.5ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (100.2ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (2.0ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (2.3ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (21.5ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (10.8ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (2.3ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+  [1m[35m (97.4ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (1.1ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (2.9ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+  [1m[35m (17.5ms)[0m  [1m[34mSELECT oid FROM pg_roles WHERE rolname = 'anon' /*application='Postgrest'*/[0m
+  [1m[35m (3.3ms)[0m  [1m[34mSELECT pg_stat_statements_reset() /*application='Postgrest'*/[0m
+  [1m[35m (1.3ms)[0m  [1m[34mSELECT query
+FROM pg_stat_statements
+WHERE toplevel = true
+  AND userid = 255699
+  AND query ILIKE 'WITH pgrst_source%'
+LIMIT 1
+ /*application='Postgrest'*/[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m
+[dotenv] Set [36mDATABASE_URL[0m, [36mPOSTGREST_URL[0m
+[dotenv] Loaded [33m.env[0m

@@ -1,0 +1,28 @@
+# docker-compose.yml
+
+name: postgrest-local
+version: '3'
+services:
+  server:
+    image: postgrest/postgrest
+    ports:
+      - "3100:3000"
+    environment:
+      PGRST_SERVER_HOST: 0.0.0.0 # necessary for `postgrest --ready` flag to work
+      PGRST_DB_URI: postgres://postgres:postgrespw@host.docker.internal:45432/postgrest
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_PLAN_ENABLED: "true"
+      # PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
+    # depends_on:
+    #   - db
+  db:
+    image: postgres
+    ports:
+      - "45432:5432"
+    environment:
+      POSTGRES_DB: app_db
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: password
+  Uncomment this if you want to persist the data.
+  volumes:
+    - "./pgdata:/var/lib/postgresql/data"
