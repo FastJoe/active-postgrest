@@ -1,0 +1,49 @@
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "*.gemspec"
+    - "example/**/*"
+
+# No doc comments — code is self-documenting
+Style/Documentation:
+  Enabled: false
+
+# has_one / has_many are intentional ActiveRecord-style names
+Naming/PredicatePrefix:
+  Enabled: false
+
+# Short params are fine in one-liner/lambda methods
+Naming/MethodParameterName:
+  MinNameLength: 1
+
+# _1, _2 numbered params are fine in small blocks
+Style/NumberedParametersLimit:
+  Max: 2
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 25
+
+Metrics/ParameterLists:
+  Max: 6
+
+Metrics/ClassLength:
+  Max: 230
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+
+# belongs_to and encode_value are inherently branchy DSL methods
+Metrics/AbcSize:
+  Max: 35
+
+Metrics/CyclomaticComplexity:
+  Max: 14
+
+Metrics/PerceivedComplexity:
+  Max: 14
