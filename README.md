@@ -32,7 +32,7 @@ The library is tested against PostgREST 12. It should work with PostgREST 10+ fo
 ## Installation
 
 ```ruby
-gem "active_postgrest"
+gem "active_postgrest", "~> 0.2"
 ```
 
 ## Setup

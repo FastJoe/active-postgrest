@@ -1,6 +1,6 @@
 # active_postgrest
 
-[![Built with Claude](https://img.shields.io/badge/built%20with-Claude-blueviolet?logo=anthropic)](https://claude.ai)
+[![Gem Version](https://img.shields.io/gem/v/active_postgrest)](https://rubygems.org/gems/active_postgrest) [![CI](https://github.com/FastJoe/active-postgrest/actions/workflows/ci.yml/badge.svg)](https://github.com/FastJoe/active-postgrest/actions/workflows/ci.yml) [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE) [![Signed](https://img.shields.io/badge/gem-signed-brightgreen)](certs/gem-public_cert.pem) [![Built with Claude](https://img.shields.io/badge/built%20with-Claude-blueviolet?logo=anthropic)](https://claude.ai)
 
 Ruby-клиент для [PostgREST](https://postgrest.org) в стиле ActiveRecord.
 
@@ -32,7 +32,7 @@ User.where(active: false).update_all(status: "archived")
 ## Установка
 
 ```ruby
-gem "active_postgrest"
+gem "active_postgrest", "~> 0.2"
 ```
 
 ## Настройка
