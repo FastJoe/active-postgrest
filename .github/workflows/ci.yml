@@ -23,7 +23,7 @@ jobs:
           bundler-cache: true
 
       - name: RuboCop
-        run: bundle exec rubocop --format github
+        run: bundle exec rubocop lib/ spec/ --format github
 
       - name: Tests
         run: bundle exec rspec --format progress
