@@ -26,3 +26,4 @@
 /config/*.key
 .claude
 /.claude/*
+example/tmp/
