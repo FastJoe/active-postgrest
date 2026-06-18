@@ -3,8 +3,8 @@ require_relative "lib/active_postgrest/version"
 Gem::Specification.new do |s|
   s.name        = "active_postgrest"
   s.version     = ActivePostgrest::VERSION
-  s.summary     = "ActiveRecord-style Ruby client for PostgREST"
-  s.description = "Query PostgREST APIs using a familiar ActiveRecord-like interface"
+  s.summary     = "ActiveRecord-style Ruby ORM for PostgREST"
+  s.description = "ActiveRecord-style ORM for PostgREST: queries, CRUD operations, associations, scopes, and ActiveModel integration"
   s.authors     = ["Evgeny Sokolov"]
   s.email       = ["evgeny.sokolov@gmail.com"]
   s.homepage    = "https://github.com/FastJoe/active-postgrest"
