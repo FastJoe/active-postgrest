@@ -44,6 +44,38 @@ module ActivePostgrest
       response
     end
 
+    def post(resource, body, prefer: 'return=representation', schema: nil)
+      response = @conn.post(resource, body) do |req|
+        auth_headers(req)
+        req.headers['Prefer']          = prefer
+        req.headers['Content-Profile'] = schema if schema
+      end
+      raise_on_error!(response)
+      response
+    end
+
+    def patch(resource, params, body, prefer: 'return=representation', schema: nil)
+      response = @conn.patch(resource, body) do |req|
+        auth_headers(req)
+        req.params.update(params)
+        req.headers['Prefer']          = prefer
+        req.headers['Content-Profile'] = schema if schema
+      end
+      raise_on_error!(response)
+      response
+    end
+
+    def delete(resource, params, prefer: 'return=representation', schema: nil)
+      response = @conn.delete(resource) do |req|
+        auth_headers(req)
+        req.params.update(params)
+        req.headers['Prefer']          = prefer
+        req.headers['Content-Profile'] = schema if schema
+      end
+      raise_on_error!(response)
+      response
+    end
+
     def anonymous
       self.class.new(@base_url)
     end

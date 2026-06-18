@@ -81,7 +81,7 @@ module ActivePostgrest
         val = @attributes[key]
         return nil if val.nil? || (val.is_a?(Array) && val.empty?)
 
-        klass.constantize.new(val.is_a?(Array) ? val.first : val)
+        klass.constantize.new(val.is_a?(Array) ? val.first : val, true)
       end
 
       define_singleton_method(:"with_#{assoc}") do |fields: []|
@@ -101,7 +101,7 @@ module ActivePostgrest
         val = @attributes[assoc]
         return nil if val.nil? || (val.is_a?(Array) && val.empty?)
 
-        klass.constantize.new(val.is_a?(Array) ? val.first : val)
+        klass.constantize.new(val.is_a?(Array) ? val.first : val, true)
       end
 
       define_singleton_method(:"with_#{assoc}") do |fields: []|
@@ -117,7 +117,7 @@ module ActivePostgrest
         val = @attributes[assoc]
         return [] if val.nil?
 
-        Array(val).map { klass.constantize.new(_1) }
+        (val.is_a?(Array) ? val : [val]).map { klass.constantize.new(_1, true) }
       end
 
       define_singleton_method(:"with_#{assoc}") do |fields: []|
@@ -171,14 +171,42 @@ module ActivePostgrest
     def self.one?         = relation.one?
     def self.many?        = relation.many?
 
-    def initialize(attrs = {})
+    def self.create(attrs)
+      relation.insert(attrs)
+    end
+
+    def self.create!(attrs)
+      relation.insert(attrs) || raise(RecordNotSaved.new(self, attrs))
+    end
+
+    def self.insert(attrs)        = relation.insert(attrs)
+    def self.insert_all(records)  = relation.insert_all(records)
+    def self.upsert(attrs)        = relation.upsert(attrs)
+    def self.upsert_all(records)  = relation.upsert_all(records)
+    def self.update_all(attrs)    = relation.update_all(attrs)
+    def self.delete_all           = relation.delete_all
+
+    def initialize(attrs = {}, persisted = false, client = nil) # rubocop:disable Style/OptionalBooleanParameter
       types = self.class.attribute_types
       @attributes = attrs.to_h.transform_keys(&:to_s).to_h do |k, v|
         [k, types[k] ? cast_attribute(v, types[k]) : v]
       end
+      @new_record = !persisted
+      @destroyed  = false
+      @_client    = client
     end
 
+    def new_record? = @new_record
+    def persisted?  = !@new_record && !@destroyed
+    def destroyed?  = @destroyed
+
     def [](key) = @attributes[key.to_s]
+
+    def []=(key, value)
+      str_key = key.to_s
+      type    = self.class.attribute_types[str_key]
+      @attributes[str_key] = type ? cast_attribute(value, type) : value
+    end
     attr_reader :attributes
 
     def to_h = @attributes
@@ -187,18 +215,86 @@ module ActivePostgrest
       "#<#{self.class.name} #{@attributes.map { "#{_1}: #{_2.inspect}" }.join(', ')}>"
     end
 
-    def method_missing(name, *)
+    def method_missing(name, *args)
       key = name.to_s
-      return @attributes[key] if @attributes.key?(key)
+      if key.end_with?('=')
+        attr = key.delete_suffix('=')
+        if @attributes.key?(attr)
+          type = self.class.attribute_types[attr]
+          return @attributes[attr] = type ? cast_attribute(args.first, type) : args.first
+        end
+      elsif @attributes.key?(key)
+        return @attributes[key]
+      end
 
       super
     end
 
     def respond_to_missing?(name, include_private = false)
-      @attributes.key?(name.to_s) || super
+      key  = name.to_s
+      attr = key.delete_suffix('=')
+      @attributes.key?(attr) || super
+    end
+
+    def save # rubocop:disable Naming/PredicateMethod
+      return false if @destroyed
+
+      if new_record?
+        saved = self.class.insert(@attributes)
+        return false unless saved
+
+        @attributes = saved.attributes
+        @new_record = false
+      else
+        pk     = self.class.primary_key
+        pk_val = @attributes[pk]
+        raise ArgumentError, 'Cannot save a record without a primary key value' if pk_val.nil?
+
+        saved = _base_relation.where(pk => pk_val).update_all(scalar_attributes.except(pk)).first
+        return false unless saved
+
+        @attributes = saved.attributes
+      end
+      true
+    end
+
+    def update(attrs)
+      attrs.each { |k, v| @attributes[k.to_s] = v }
+      save
+    end
+
+    def destroy
+      pk     = self.class.primary_key
+      pk_val = @attributes[pk]
+      raise ArgumentError, 'Cannot destroy a record without a primary key value' if pk_val.nil?
+
+      _base_relation.where(pk => pk_val).delete_all
+      @destroyed = true
+      self
+    end
+
+    def reload
+      raise RecordNotFound.new(self.class, nil) unless persisted?
+
+      pk    = self.class.primary_key
+      fresh = _base_relation.where(pk => @attributes[pk]).first
+      raise RecordNotFound.new(self.class, @attributes[pk]) unless fresh
+
+      @attributes = fresh.attributes
+      self
     end
 
     private
+
+    def scalar_attributes
+      @attributes.reject { |_, v| v.is_a?(Hash) || v.is_a?(Array) }
+    end
+
+    def _base_relation
+      client = @_client || self.class.connection
+      rel    = ActivePostgrest::Relation.new(self.class.table_name, client, self.class)
+      self.class.schema_name ? rel.with_schema(self.class.schema_name) : rel
+    end
 
     def cast_attribute(value, type)
       return nil if value.nil?

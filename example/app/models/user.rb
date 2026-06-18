@@ -17,10 +17,6 @@ class User < ActivePostgrest::Base
     embed(:mother, fields: fields).embed(:father, fields: fields)
   end
 
-  def self.with_company(fields: [])
-    joins(:companies, select: fields)
-  end
-
   def full_name
     [last_name, first_name, middle_name].compact.join(" ")
   end

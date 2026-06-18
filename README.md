@@ -1,6 +1,6 @@
 # active_postgrest
 
-[	![Built with Claude](https://img.shields.io/badge/built%20with-Claude-blueviolet?logo=anthropic)](https://claude.ai)
+[![Gem Version](https://img.shields.io/gem/v/active_postgrest)](https://rubygems.org/gems/active_postgrest) [![CI](https://github.com/FastJoe/active-postgrest/actions/workflows/ci.yml/badge.svg)](https://github.com/FastJoe/active-postgrest/actions/workflows/ci.yml) [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE) [![Signed](https://img.shields.io/badge/gem-signed-brightgreen)](certs/gem-public_cert.pem) [![Built with Claude](https://img.shields.io/badge/built%20with-Claude-blueviolet?logo=anthropic)](https://claude.ai)
 
 ActiveRecord-style Ruby client for [PostgREST](https://postgrest.org). [Документация на русском](README.ru.md).
 
@@ -8,7 +8,26 @@ ActiveRecord-style Ruby client for [PostgREST](https://postgrest.org). [Доку
 User.where(active: true).order(:last_name).limit(20).to_a
 User.find!(42)
 User.where(age: 18..65).count
+User.create!(name: "Alice", email: "alice@example.com")
+User.where(active: false).update_all(status: "archived")
 ```
+
+## PostgREST compatibility
+
+| Feature | Min. PostgREST version |
+|---|---|
+| Basic queries, filtering, ordering, pagination | 7.0 |
+| Mutations — POST, PATCH, DELETE, upsert | 7.0 |
+| Multiple schemas (`Accept-Profile` / `Content-Profile`) | 7.0 |
+| `or=` / `and=` logical operators | 7.0 |
+| `count(:planned)` / `count(:estimated)` | 7.0 |
+| `explain` — EXPLAIN plan endpoint | **10.0** |
+| `spread` — `...table` syntax | **11.0** |
+| Column aggregates — `average`, `sum`, `minimum`, `maximum` | **12.0** |
+
+Column aggregates require `db-aggregates-enabled = true` in `postgrest.conf` (PostgREST 12+).
+
+The library is tested against PostgREST 12. It should work with PostgREST 10+ for all features except column aggregates and `spread`. Core querying and mutations work with PostgREST 7+.
 
 ## Installation
 
@@ -210,6 +229,20 @@ User.where(bio: { wfts: "ruby rails" })   # websearch full-text
 
 ### OR / AND conditions
 
+**AR-style `.or`** — mirrors ActiveRecord's `where.or`:
+
+```ruby
+# Simple OR
+User.where(active: true).or(User.where(role: "admin"))
+# → or=(active.is.true,role.eq.admin)
+
+# Multiple AND conditions on one side are wrapped automatically
+User.where(active: true).where(age: { gt: 18 }).or(User.where(role: "admin"))
+# → or=(and(active.is.true,age.gt.18),role.eq.admin)
+```
+
+**PostgREST-specific multi-condition helpers:**
+
 ```ruby
 User.or_where([{ age: { lt: 18 } }, { status: "inactive" }])
 # → or=(age.lt.18,status.eq.inactive)
@@ -217,6 +250,16 @@ User.or_where([{ age: { lt: 18 } }, { status: "inactive" }])
 User.and_where([{ age: { gt: 18 } }, { role: "admin" }])
 # → and=(age.gt.18,role.eq.admin)
 ```
+
+> **Security note:** `where`, `or_where`, and `and_where` treat hash **keys** as column names without escaping. Never pass raw user-controlled keys directly:
+>
+> ```ruby
+> # UNSAFE — attacker controls which columns are filtered
+> User.where(params[:filters])
+>
+> # SAFE — developer controls keys, only values come from user input
+> User.where(status: params[:status], role: params[:role])
+> ```
 
 ### Ordering, pagination
 
@@ -370,6 +413,146 @@ User.pluck(:id, :name)            # [[1, "Alice"], [2, "Bob"], ...]
 User.pick(:email)                 # "alice@example.com" (first match)
 ```
 
+## Mutations
+
+### Create
+
+```ruby
+# Returns a persisted instance (or nil on empty response)
+User.create(name: "Alice", email: "alice@example.com")
+
+# Raises if creation fails: UnprocessableEntity on constraint violations (422),
+# RecordNotSaved if PostgREST returns no body
+User.create!(name: "Alice")
+
+# Bulk insert — returns array of persisted records
+User.insert_all([{ name: "Alice" }, { name: "Bob" }])
+```
+
+`insert` is the low-level alternative to `create` — same HTTP call, same return value. Use `create` / `create!` for the ActiveRecord-style pattern.
+
+### Upsert
+
+```ruby
+# Single upsert — uses PostgREST resolution=merge-duplicates
+User.upsert(id: 1, name: "Alice Updated")
+
+# Bulk upsert
+User.upsert_all([
+  { id: 1, name: "Alice Updated" },
+  { id: 2, name: "Bob New" }
+])
+```
+
+### Update
+
+```ruby
+# Bulk — updates all matching rows, returns updated records
+User.where(active: false).update_all(status: "archived")
+User.where(role: "trial").update_all(expires_at: 30.days.from_now)
+
+# Instance
+user = User.find!(1)
+user.update(name: "New Name")   # merges attrs and saves
+user.name = "Other"
+user.save                        # returns true/false
+```
+
+### Delete
+
+```ruby
+# Bulk — deletes all matching rows, returns deleted records
+User.where(created_at: ..1.year.ago).delete_all
+User.where(active: false).delete_all
+
+# Instance
+user.destroy          # DELETE by primary key; record is marked as destroyed
+user.destroyed?       # => true
+user.persisted?       # => false
+user.save             # => false (destroyed records cannot be re-inserted this way)
+```
+
+### Reload
+
+```ruby
+user = User.find!(1)
+user.name = "Local change"
+user.reload   # re-fetches from DB, discards local changes
+```
+
+### Persistence state
+
+```ruby
+User.new(name: "Alice").new_record?   # => true
+User.find!(1).persisted?              # => true
+
+user = User.new(name: "Alice")
+user.save          # inserts, marks as persisted
+user.persisted?    # => true
+
+user.destroy
+user.destroyed?    # => true
+user.new_record?   # => false
+```
+
+### Write path notes
+
+**Embedded associations are excluded from saves.** `save` and `update` only send scalar (non-Hash, non-Array) attributes to PostgREST. Embedded association data loaded via `with_*` is automatically excluded from the PATCH body — PostgREST would reject non-column keys with a 400 error.
+
+**Token/anonymous context is preserved.** Records returned from queries remember the client they were fetched with. Instance methods `save`, `update`, `destroy`, and `reload` reuse that same client, so RLS policies applied during the read are also applied during writes.
+
+```ruby
+# Both GET and PATCH run under user_jwt
+user = User.with_token(user_jwt).find!(1)
+user.update(name: "New Name")   # uses user_jwt, not the class default connection
+```
+
+**`save` returns false for 0 updated rows.** If PostgREST returns an empty response after a PATCH (e.g. the row is invisible under RLS after the write), `save` returns `false` even though the write may have committed. Use `create!` or validate via `find!` after save when strong guarantees are needed.
+
+**`create` / `create!` are chainable on relations.** Call them on any relation, including per-request token scopes:
+
+```ruby
+User.with_token(user_jwt).create!(name: "Alice")   # INSERT under user_jwt
+```
+
+## ActiveModel (optional)
+
+`active_postgrest` does not depend on ActiveModel. Opt in to get `valid?`, `errors`, and Rails form-helper support (`form_with`).
+
+**Outside Rails** — require after the gem:
+
+```ruby
+require 'active_postgrest'
+require 'active_postgrest/active_model'
+```
+
+**In Rails** — require the railtie (e.g. in an initializer):
+
+```ruby
+require 'active_postgrest/railtie'
+```
+
+Add `gem "activemodel"` to your Gemfile if it is not already pulled in by Rails.
+
+Once loaded:
+
+```ruby
+class User < ActivePostgrest::Base
+  validates :name, presence: true
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+end
+
+user = User.new(email: "bad")
+user.valid?           # => false
+user.errors[:name]    # => ["can't be blank"]
+user.save             # => false — validation failed, no HTTP request made
+
+user = User.new(name: "Alice", email: "alice@example.com")
+user.save             # => true — validates then POST
+```
+
+`form_with(model: @user)` works because `Base` gets `ActiveModel::Naming` and `ActiveModel::Conversion`.
+
 ## Associations
 
 Associations wrap embedded JSON returned by PostgREST — they do **not** trigger additional HTTP requests.
@@ -445,7 +628,7 @@ User.joins(:companies).where(active: true).to_sql
 # Reconstructed from relation state — no HTTP call. See method docs for limitations.
 
 User.where(active: true).explain
-# Returns PostgREST EXPLAIN plan (requires PostgREST ≥ 11)
+# Returns PostgREST EXPLAIN plan (requires PostgREST ≥ 10)
 ```
 
 ## Errors
@@ -467,12 +650,11 @@ All `ActivePostgrest::Error` subclasses expose `#http_status`, `#code`, `#detail
 
 ## Limitations
 
-- **Read-only** — no create, update, or delete. PostgREST write operations are not implemented.
 - **No `distinct`** — PostgREST does not expose a `DISTINCT` modifier. Use a database view instead.
 - **No `group` / `having`** — aggregate SQL clauses are not supported by the PostgREST REST API.
 - **No lazy association loading** — associations only work when the related data is embedded in the same response via `joins` / `embed` / `with_*`.
 - **`to_sql`** — reconstructs an approximate SQL string from the relation state, no database call needed. It uses PostgREST embed notation (`companies!inner(*)`) rather than real SQL joins, and shows literal values instead of `$1`-style placeholders. Use `explain` to see the actual execution plan.
-- **`explain`** — requires PostgREST ≥ 11.
+- **`explain`** — requires PostgREST ≥ 10.
 - **`count`** relies on the `Content-Range` header. If PostgREST is configured to suppress it, `count` raises `CountNotAvailable`. `:planned` and `:estimated` modes return approximate values and are faster but not suitable where precision matters.
 
 ## Differences from ActiveRecord
@@ -497,17 +679,22 @@ User.average(:age) / sum(:amount) / minimum(:age) / maximum(:age)
 User.pluck(:name) / pick(:name)
 User.first / last
 User.scope :active, -> { where(active: true) }
+User.create / create! / insert / insert_all / upsert / upsert_all
+User.where(...).update_all / delete_all
+user.save / update / destroy / reload
+User.where(a: 1).or(User.where(b: 2))       # AR-style OR
 ```
 
 ### Different from ActiveRecord
 
-**OR / AND conditions** — AR uses `.or(Model.where(...))`, здесь отдельные методы:
+**OR / AND conditions** — `.or` works the same as AR. `or_where` and `and_where` are PostgREST-specific helpers for multi-condition arrays:
 
 ```ruby
-# AR
-User.where(age: 18).or(User.where(role: "admin"))
+# Same as AR — chaining where + or
+User.where(active: true).or(User.where(role: "admin"))
+User.where(active: true).where(age: { gt: 18 }).or(User.where(role: "admin"))
 
-# active_postgrest
+# PostgREST-specific — pass an array of conditions
 User.or_where([{ age: 18 }, { role: "admin" }])
 User.and_where([{ age: { gt: 18 } }, { active: true }])
 ```
@@ -563,7 +750,6 @@ User.count(:estimated)                            # near-instant count from pg_c
 
 ### Not implemented
 
-- **Mutations** — no `create`, `update`, `destroy`, `save`, `upsert`. PostgREST supports them; this library is currently read-only.
 - **`distinct`** — not exposed by PostgREST's REST API. Use a database view instead.
 - **`group` / `having`** — not supported by PostgREST's REST API.
 - **Lazy association loading** — associations only work when the related data was embedded in the same response via `joins` / `embed` / `with_*`. There is no `user.company` auto-fetch.

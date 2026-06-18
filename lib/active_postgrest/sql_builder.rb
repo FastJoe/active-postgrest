@@ -81,6 +81,22 @@ module ActivePostgrest
       val
     end
 
+    def encoded_filter_conditions
+      @filters.flat_map { |col, enc| Array(enc).map { "#{col}.#{_1}" } }
+    end
+
+    def or_group(conditions)
+      return nil if conditions.empty?
+
+      conditions.one? ? conditions.first : "and(#{conditions.join(',')})"
+    end
+
+    def condition_parts(filters)
+      filters.flat_map do |col, val|
+        Array(encode_value(val)).map { "#{col}.#{_1}" }
+      end
+    end
+
     def merge_filter!(col, encoded)
       existing = @filters[col]
       @filters[col] = existing ? [*Array(existing), *Array(encoded)] : encoded
@@ -106,6 +122,11 @@ module ActivePostgrest
     end
 
     def decode_condition(cond)
+      if cond.start_with?('and(') && cond.end_with?(')')
+        inner = cond[4..-2]
+        return "(#{split_conditions(inner).map { decode_condition(_1) }.join(' AND ')})"
+      end
+
       parts  = cond.split('.')
       op_idx = parts.index { KNOWN_OP_KEYS.include?(_1) }
       return cond unless op_idx
@@ -113,6 +134,25 @@ module ActivePostgrest
       col     = parts[0...op_idx].join('.')
       encoded = parts[op_idx..].join('.')
       decode_filter(col, encoded)
+    end
+
+    def split_conditions(str)
+      depth  = 0
+      start  = 0
+      result = []
+      str.each_char.with_index do |c, i|
+        case c
+        when '(' then depth += 1
+        when ')' then depth -= 1
+        when ','
+          if depth.zero?
+            result << str[start...i]
+            start = i + 1
+          end
+        end
+      end
+      result << str[start..]
+      result.reject(&:empty?)
     end
 
     def sql_quote(val)

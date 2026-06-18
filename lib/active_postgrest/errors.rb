@@ -29,4 +29,18 @@ module ActivePostgrest
   class UnprocessableEntity < Error; end
   # 5xx
   class ServerError         < Error; end
+
+  class RecordNotFound < StandardError
+    def initialize(model, id)
+      super("#{model.name} not found: #{id.inspect}")
+    end
+  end
+
+  class RecordNotSaved < StandardError
+    def initialize(model, attrs)
+      super("#{model.name} could not be saved: #{attrs.inspect}")
+    end
+  end
+
+  class CountNotAvailable < StandardError; end
 end

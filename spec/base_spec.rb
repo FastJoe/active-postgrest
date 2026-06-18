@@ -100,12 +100,6 @@ RSpec.describe ActivePostgrest::Base do
   # ──────────────────────────────────────────────────────────────────────────
 
   describe 'attribute type casting' do
-    before do
-      post_class.attribute(:published_at, :datetime)
-      post_class.attribute(:score, :decimal)
-      post_class.attribute(:birth_date, :date)
-    end
-
     subject(:record) do
       post_class.new(
         'id' => 1,
@@ -114,6 +108,12 @@ RSpec.describe ActivePostgrest::Base do
         'birth_date' => '1990-06-17',
         'title' => 'Hello'
       )
+    end
+
+    before do
+      post_class.attribute(:published_at, :datetime)
+      post_class.attribute(:score, :decimal)
+      post_class.attribute(:birth_date, :date)
     end
 
     it 'casts datetime strings to Time' do
@@ -250,6 +250,12 @@ RSpec.describe ActivePostgrest::Base do
 
     it 'defines a with_* scope class method' do
       expect(post_class).to respond_to(:with_comments)
+    end
+
+    it 'handles a single embedded object (non-array) returned by PostgREST' do
+      record = post_class.new('comments' => { 'id' => 1 })
+      expect(record.comments.length).to eq(1)
+      expect(record.comments.first).to be_a(Comment)
     end
   end
 

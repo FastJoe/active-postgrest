@@ -1,3 +1,6 @@
+plugins:
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 3.2
   NewCops: enable
@@ -32,7 +35,10 @@ Metrics/ParameterLists:
   Max: 6
 
 Metrics/ClassLength:
-  Max: 230
+  Max: 250
+
+Metrics/ModuleLength:
+  Max: 135
 
 Metrics/BlockLength:
   Exclude:
@@ -47,3 +53,25 @@ Metrics/CyclomaticComplexity:
 
 Metrics/PerceivedComplexity:
   Max: 14
+
+# RSpec style: opinionated rules disabled
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/StubbedMock:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false

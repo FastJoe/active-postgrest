@@ -161,8 +161,8 @@ RSpec.describe ActivePostgrest::Relation do
     it 'builds or= param' do
       r = relation.or_where([{ age: { lt: 18 } }, { status: 'active' }])
       pairs = url_pairs(r)
-      expect(pairs.assoc('or')[1]).to match(/age\.lt\.18/)
-      expect(pairs.assoc('or')[1]).to match(/status\.eq\.active/)
+      expect(pairs.assoc('or')[1]).to include('age.lt.18')
+      expect(pairs.assoc('or')[1]).to include('status.eq.active')
     end
   end
 
@@ -170,8 +170,42 @@ RSpec.describe ActivePostgrest::Relation do
     it 'builds and= param' do
       r = relation.and_where([{ age: { gt: 18 } }, { status: 'active' }])
       pairs = url_pairs(r)
-      expect(pairs.assoc('and')[1]).to match(/age\.gt\.18/)
-      expect(pairs.assoc('and')[1]).to match(/status\.eq\.active/)
+      expect(pairs.assoc('and')[1]).to include('age.gt.18')
+      expect(pairs.assoc('and')[1]).to include('status.eq.active')
+    end
+  end
+
+  describe '#or' do
+    it 'merges two single-condition relations into or=' do
+      r = relation.where(active: true).or(relation.where(role: 'admin'))
+      or_val = url_pairs(r).assoc('or')[1]
+      expect(or_val).to include('active.is.true')
+      expect(or_val).to include('role.eq.admin')
+    end
+
+    it 'wraps multiple filters in and(...)' do
+      left  = relation.where(active: true).where(age: { gt: 18 })
+      r     = left.or(relation.where(role: 'admin'))
+      or_val = url_pairs(r).assoc('or')[1]
+      expect(or_val).to include('and(')
+      expect(or_val).to include('active.is.true')
+      expect(or_val).to include('age.gt.18')
+      expect(or_val).to include('role.eq.admin')
+    end
+
+    it 'clears base filters from the result (they move into or= clause)' do
+      r = relation.where(active: true).or(relation.where(role: 'admin'))
+      expect(url_pairs(r)).not_to include(['active', 'is.true'])
+    end
+
+    it 'raises ArgumentError when receiver has existing or_where conditions' do
+      r = relation.or_where([{ a: 1 }])
+      expect { r.or(relation.where(b: 2)) }.to raise_error(ArgumentError, /#or does not support/)
+    end
+
+    it 'raises ArgumentError when argument has existing or_where conditions' do
+      other = relation.or_where([{ b: 2 }])
+      expect { relation.where(a: 1).or(other) }.to raise_error(ArgumentError, /#or does not support/)
     end
   end
 

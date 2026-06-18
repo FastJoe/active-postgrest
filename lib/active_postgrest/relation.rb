@@ -2,14 +2,6 @@
 # Copyright 2026 Evgeny Sokolov (FastJoe)
 
 module ActivePostgrest
-  class RecordNotFound < StandardError
-    def initialize(model, id)
-      super("#{model.name} not found: #{id.inspect}")
-    end
-  end
-
-  class CountNotAvailable < StandardError; end
-
   class Relation
     include Enumerable
 
@@ -89,6 +81,23 @@ module ActivePostgrest
       clone_with { @or_conditions.concat(parts) }
     end
 
+    # where(a: 1).or(where(b: 2))         → or=(a.eq.1,b.eq.2)
+    # where(a: 1).where(c: 3).or(where(b: 2)) → or=(and(a.eq.1,c.eq.3),b.eq.2)
+    def or(other)
+      other_or  = other.instance_variable_get(:@or_conditions)
+      other_and = other.instance_variable_get(:@and_conditions)
+      if @or_conditions.any? || @and_conditions.any? || other_or.any? || other_and.any?
+        raise ArgumentError, '#or does not support a relation with existing or_where/and_where conditions'
+      end
+
+      left  = or_group(encoded_filter_conditions)
+      right = or_group(other.encoded_filter_conditions)
+      clone_with do
+        @filters = {}
+        @or_conditions.concat([left, right].compact)
+      end
+    end
+
     # and_where([{ age: { gt: 18 } }, { status: "active" }]) → and=(age.gt.18,status.eq.active)
     def and_where(conditions)
       parts = Array(conditions).flat_map { |f| condition_parts(f) }
@@ -118,7 +127,8 @@ module ActivePostgrest
     def to_a
       return [] if @null
 
-      Array(@client.get(@table, build_params, schema: @schema).body).map { |attrs| @model_class.new(attrs) }
+      Array(@client.get(@table, build_params, schema: @schema).body)
+        .map { |attrs| @model_class.new(attrs, true, @client) }
     end
 
     def first
@@ -221,6 +231,9 @@ module ActivePostgrest
     end
 
     include SqlBuilder
+    include Mutations
+
+    protected :encoded_filter_conditions
 
     private
 
@@ -274,12 +287,6 @@ module ActivePostgrest
         @offset_val = nil
         @order_val  = nil
       end.to_a.first&.[](key)
-    end
-
-    def condition_parts(filters)
-      filters.flat_map do |col, val|
-        Array(encode_value(val)).map { "#{col}.#{_1}" }
-      end
     end
 
     def build_params

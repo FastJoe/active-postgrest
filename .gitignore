@@ -26,4 +26,8 @@
 /config/*.key
 .claude
 /.claude/*
-example/tmp/
+/example/tmp/
+/example/log/*
+coverage/
+gem-private_key.pem
+*.gem
