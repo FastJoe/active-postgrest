@@ -582,6 +582,26 @@ RSpec.describe ActivePostgrest::Relation do
       end
     end
 
+    context 'with a non-zero offset (Content-Range starts above 0)' do
+      it '#one? returns true when the offset window holds exactly 1 record' do
+        allow(client).to receive(:head).and_return(instance_double(Faraday::Response,
+                                                                   headers: { 'content-range' => '2-2/*' }))
+        expect(relation.offset(2).one?).to be true
+      end
+
+      it '#many? returns false when the offset window holds exactly 1 record' do
+        allow(client).to receive(:head).and_return(instance_double(Faraday::Response,
+                                                                   headers: { 'content-range' => '2-2/*' }))
+        expect(relation.offset(2).many?).to be false
+      end
+
+      it '#many? returns true when the offset window holds 2 records' do
+        allow(client).to receive(:head).and_return(instance_double(Faraday::Response,
+                                                                   headers: { 'content-range' => '2-3/*' }))
+        expect(relation.offset(2).many?).to be true
+      end
+    end
+
     context 'when Content-Range header is absent' do
       let(:response) { instance_double(Faraday::Response, headers: {}) }
 
@@ -696,6 +716,148 @@ RSpec.describe ActivePostgrest::Relation do
   # ──────────────────────────────────────────────────────────────────────────
   # method_missing delegates to model scopes
   # ──────────────────────────────────────────────────────────────────────────
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # to_sql — round-trip decode tests (sql_builder.rb decode path)
+  # ──────────────────────────────────────────────────────────────────────────
+
+  describe '#to_sql' do
+    it 'returns SELECT * FROM table with no conditions' do
+      expect(relation.to_sql).to eq("SELECT *\nFROM widgets")
+    end
+
+    it 'encodes integer equality without quotes' do
+      expect(relation.where(id: 1).to_sql).to include('WHERE id = 1')
+    end
+
+    it 'encodes string equality with single quotes' do
+      expect(relation.where(name: 'John').to_sql).to include("WHERE name = 'John'")
+    end
+
+    it 'encodes nil as IS NULL' do
+      expect(relation.where(deleted_at: nil).to_sql).to include('WHERE deleted_at IS NULL')
+    end
+
+    it 'encodes true as IS TRUE' do
+      expect(relation.where(active: true).to_sql).to include('WHERE active IS TRUE')
+    end
+
+    it 'encodes false as IS FALSE' do
+      expect(relation.where(active: false).to_sql).to include('WHERE active IS FALSE')
+    end
+
+    it 'encodes where.not(nil) as IS NOT NULL' do
+      expect(relation.where.not(deleted_at: nil).to_sql).to include('WHERE deleted_at IS NOT NULL')
+    end
+
+    it 'encodes array as IN (...)' do
+      expect(relation.where(id: [1, 2, 3]).to_sql).to include('WHERE id IN (1, 2, 3)')
+    end
+
+    it 'encodes negated array as NOT IN (...)' do
+      expect(relation.where.not(id: [1, 2, 3]).to_sql).to include('WHERE id NOT IN (1, 2, 3)')
+    end
+
+    it 'encodes inclusive range as >= AND <=' do
+      sql = relation.where(age: 18..30).to_sql
+      expect(sql).to include('age >= 18')
+      expect(sql).to include('age <= 30')
+    end
+
+    it 'encodes exclusive range end with <' do
+      sql = relation.where(age: 18...30).to_sql
+      expect(sql).to include('age >= 18')
+      expect(sql).to include('age < 30')
+    end
+
+    it 'encodes beginless range as single <= condition' do
+      sql = relation.where(age: ..30).to_sql
+      expect(sql).to include('age <= 30')
+      expect(sql).not_to include('>=')
+    end
+
+    it 'encodes endless range as single >= condition' do
+      sql = relation.where(age: 5..).to_sql
+      expect(sql).to include('age >= 5')
+      expect(sql).not_to include('<=')
+    end
+
+    it 'encodes hash op' do
+      expect(relation.where(age: { gt: 18 }).to_sql).to include('age > 18')
+    end
+
+    it 'encodes neq' do
+      expect(relation.where(status: { neq: 'banned' }).to_sql).to include("status != 'banned'")
+    end
+
+    context 'when sql_quote escapes strings' do
+      it 'doubles single quotes to prevent SQL injection' do
+        expect(relation.where(name: "O'Brien").to_sql).to include("name = 'O''Brien'")
+      end
+
+      it 'does not quote integers' do
+        expect(relation.where(id: 42).to_sql).to match(/id = 42(?!')/)
+      end
+
+      it 'does not quote negative numbers' do
+        expect(relation.where(score: { lt: -5 }).to_sql).to include('score < -5')
+      end
+
+      it 'does not quote decimal numbers' do
+        expect(relation.where(price: { gte: 9.99 }).to_sql).to include('price >= 9.99')
+      end
+    end
+
+    context 'with ORDER BY clause' do
+      it 'renders ASC by default' do
+        expect(relation.order(:name).to_sql).to include('ORDER BY name ASC')
+      end
+
+      it 'renders DESC when specified' do
+        expect(relation.order(:name, :desc).to_sql).to include('ORDER BY name DESC')
+      end
+
+      it 'renders NULLS LAST' do
+        expect(relation.order(:name, :asc, nulls: :last).to_sql).to include('ORDER BY name ASC NULLS LAST')
+      end
+
+      it 'renders NULLS FIRST' do
+        expect(relation.order(:name, :desc, nulls: :first).to_sql).to include('ORDER BY name DESC NULLS FIRST')
+      end
+    end
+
+    context 'with LIMIT and OFFSET' do
+      it 'renders LIMIT' do
+        expect(relation.limit(10).to_sql).to include('LIMIT 10')
+      end
+
+      it 'renders OFFSET' do
+        expect(relation.offset(20).to_sql).to include('OFFSET 20')
+      end
+    end
+
+    context 'with OR conditions' do
+      it 'renders single-condition OR correctly' do
+        r = relation.where(active: true).or(relation.where(role: 'admin'))
+        expect(r.to_sql).to include("(active IS TRUE OR role = 'admin')")
+      end
+
+      it 'wraps multi-condition left side in AND(...)' do
+        left = relation.where(active: true).where(age: { gt: 18 })
+        r    = left.or(relation.where(role: 'admin'))
+        expect(r.to_sql).to include("((active IS TRUE AND age > 18) OR role = 'admin')")
+      end
+    end
+
+    context 'when split_conditions encounters comma inside nested parens' do
+      it 'correctly parses IN(...) inside an or condition' do
+        r = relation.or_where([{ id: [1, 2] }, { name: 'x' }])
+        sql = r.to_sql
+        expect(sql).to include('id IN (1, 2)')
+        expect(sql).to include("name = 'x'")
+      end
+    end
+  end
 
   describe '#method_missing' do
     before do

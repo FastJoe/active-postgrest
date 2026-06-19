@@ -408,6 +408,110 @@ RSpec.describe ActivePostgrest::Base do
   end
 
   # ──────────────────────────────────────────────────────────────────────────
+  # reload
+  # ──────────────────────────────────────────────────────────────────────────
+
+  describe '#reload' do
+    before { post_class.instance_variable_set(:@connection, client) }
+
+    let(:record) { post_class.new({ 'id' => 1, 'title' => 'Old' }, true, client) }
+
+    it 'updates attributes from fresh server response' do
+      allow(client).to receive(:get).and_return(
+        instance_double(Faraday::Response, body: [{ 'id' => 1, 'title' => 'New' }],
+                                           headers: { 'content-range' => '0-0/*' })
+      )
+      record.reload
+      expect(record.title).to eq('New')
+    end
+
+    it 'returns self' do
+      allow(client).to receive(:get).and_return(
+        instance_double(Faraday::Response, body: [{ 'id' => 1, 'title' => 'New' }],
+                                           headers: { 'content-range' => '0-0/*' })
+      )
+      expect(record.reload).to be(record)
+    end
+
+    it 'raises RecordNotFound when the record no longer exists on the backend' do
+      allow(client).to receive(:get).and_return(
+        instance_double(Faraday::Response, body: [], headers: { 'content-range' => '*/0' })
+      )
+      expect { record.reload }.to raise_error(ActivePostgrest::RecordNotFound)
+    end
+
+    it 'raises RecordNotFound when called on a new (unpersisted) record' do
+      new_record = post_class.new({ 'title' => 'Draft' })
+      expect { new_record.reload }.to raise_error(ActivePostgrest::RecordNotFound)
+    end
+  end
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # with_* scope queries — generated join/embed parameters
+  # ──────────────────────────────────────────────────────────────────────────
+
+  describe 'with_* scope queries' do
+    context 'with belongs_to (simple, no alias)' do
+      before do
+        stub_const('Post', post_class)
+        stub_const('Comment', comment_class)
+        comment_class.instance_variable_set(:@connection, client)
+        comment_class.belongs_to(:post)
+      end
+
+      it 'with_post generates an inner join to posts' do
+        expect(comment_class.with_post.to_sql).to include('posts!inner(*)')
+      end
+    end
+
+    context 'with belongs_to alias and foreign_key (self-referential)' do
+      before do
+        stub_const('User', Class.new(described_class) do
+          def self.name = 'User'
+          def self.primary_key = 'id'
+        end)
+        User.instance_variable_set(:@connection, client)
+        User.belongs_to(:mother, class_name: 'User', foreign_key: :mother_id)
+      end
+
+      it 'with_mother generates aliased inner join with correct foreign key' do
+        expect(User.with_mother.to_sql).to include('mother:users!mother_id!inner(*)')
+      end
+    end
+
+    context 'with has_many' do
+      before do
+        stub_const('Post', post_class)
+        stub_const('Comment', comment_class)
+        post_class.instance_variable_set(:@connection, client)
+        post_class.has_many(:comments)
+      end
+
+      it 'with_comments generates embed of comments with all columns' do
+        expect(post_class.with_comments.to_sql).to include('comments(*)')
+      end
+
+      it 'with_comments with fields restricts the embedded select' do
+        sql = post_class.with_comments(fields: %i[id body]).to_sql
+        expect(sql).to include('comments(id, body)')
+      end
+    end
+
+    context 'with has_one' do
+      before do
+        stub_const('Post', post_class)
+        stub_const('Comment', comment_class)
+        post_class.instance_variable_set(:@connection, client)
+        post_class.has_one(:comment)
+      end
+
+      it 'with_comment generates embed of comment' do
+        expect(post_class.with_comment.to_sql).to include('comment(*)')
+      end
+    end
+  end
+
+  # ──────────────────────────────────────────────────────────────────────────
   # POSTGRES_TYPE_CAST constant
   # ──────────────────────────────────────────────────────────────────────────
 

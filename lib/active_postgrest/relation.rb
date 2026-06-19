@@ -311,7 +311,8 @@ module ActivePostgrest
       raise CountNotAvailable, 'Content-Range header missing from HEAD response' if range.nil?
       return 0 if range.start_with?('*')
 
-      range[/\A\d+-(\d+)/, 1].to_i + 1
+      m = range.match(/\A(\d+)-(\d+)/)
+      m ? m[2].to_i - m[1].to_i + 1 : 0
     end
 
     def head_has_rows? = head_count_up_to(1).positive?

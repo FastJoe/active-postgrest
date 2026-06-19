@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2026-06-20
+
+### Fixed
+
+- `one?` / `many?` returned wrong results on relations with a non-zero `offset`: `head_count_up_to` derived the window size from the Content-Range end index alone (`end + 1`), ignoring the start index, so an offset inflated the count. Now computed as `end - start + 1`. `any?` / `none?` were unaffected (they only test for positivity).
+
+### Tests
+
+- Line coverage raised from 85% to 95%: added round-trip `to_sql` tests for all filter types (IS NULL/TRUE/FALSE, IN, NOT IN, ranges, hash operators, OR nesting), SQL injection escaping via `sql_quote`, ORDER BY with NULLS, `reload` all three branches, and `with_*` scope queries for all association types
+
 ## [0.2.3] - 2026-06-20
 
 ### Fixed
