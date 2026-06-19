@@ -31,6 +31,8 @@ User.where(active: false).update_all(status: "archived")
 
 ## Установка
 
+Требует Ruby 3.2+.
+
 ```ruby
 gem "active_postgrest", "~> 0.2"
 ```

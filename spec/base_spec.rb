@@ -93,6 +93,30 @@ RSpec.describe ActivePostgrest::Base do
       post_class.attribute(:published_at, :datetime)
       expect(post_class.attribute_types).to include('published_at' => :datetime)
     end
+
+    it 'inherits parent attribute types' do
+      parent = Class.new(described_class)
+      parent.attribute(:created_at, :datetime)
+      child = Class.new(parent)
+      expect(child.attribute_types).to include('created_at' => :datetime)
+    end
+
+    it 'child can override parent attribute type' do
+      parent = Class.new(described_class)
+      parent.attribute(:score, :decimal)
+      child = Class.new(parent)
+      child.attribute(:score, :integer)
+      expect(child.attribute_types['score']).to eq(:integer)
+      expect(parent.attribute_types['score']).to eq(:decimal)
+    end
+
+    it 'child attributes do not leak to parent' do
+      parent = Class.new(described_class)
+      parent.attribute(:created_at, :datetime)
+      child = Class.new(parent)
+      child.attribute(:score, :integer)
+      expect(parent.attribute_types).not_to include('score')
+    end
   end
 
   # ──────────────────────────────────────────────────────────────────────────
@@ -173,6 +197,29 @@ RSpec.describe ActivePostgrest::Base do
 
     it 'raises NoMethodError for unknown attributes' do
       expect { record.nonexistent }.to raise_error(NoMethodError)
+    end
+
+    context 'when a declared attribute is absent from the API response (e.g. after select)' do
+      let(:klass) do
+        Class.new(described_class) do
+          def self.name = 'Widget'
+          attribute :score, :integer
+        end
+      end
+      let(:partial_record) { klass.new({ 'id' => 1 }, true, client) }
+
+      it 'getter returns nil instead of raising NoMethodError' do
+        expect(partial_record.score).to be_nil
+      end
+
+      it 'respond_to? returns true for the declared attribute' do
+        expect(partial_record.respond_to?(:score)).to be true
+      end
+
+      it 'setter works even when the key was absent in the response' do
+        partial_record.score = 42
+        expect(partial_record.score).to eq(42)
+      end
     end
 
     it '#inspect includes class name and attributes' do

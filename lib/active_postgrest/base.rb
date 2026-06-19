@@ -58,7 +58,8 @@ module ActivePostgrest
     end
 
     def self.attribute_types
-      @attribute_types || {}
+      parent = superclass.respond_to?(:attribute_types) ? superclass.attribute_types : {}
+      parent.merge(@attribute_types || {})
     end
 
     def self.schema
@@ -219,11 +220,11 @@ module ActivePostgrest
       key = name.to_s
       if key.end_with?('=')
         attr = key.delete_suffix('=')
-        if @attributes.key?(attr)
+        if @attributes.key?(attr) || self.class.attribute_types.key?(attr)
           type = self.class.attribute_types[attr]
           return @attributes[attr] = type ? cast_attribute(args.first, type) : args.first
         end
-      elsif @attributes.key?(key)
+      elsif @attributes.key?(key) || self.class.attribute_types.key?(key)
         return @attributes[key]
       end
 
@@ -233,7 +234,7 @@ module ActivePostgrest
     def respond_to_missing?(name, include_private = false)
       key  = name.to_s
       attr = key.delete_suffix('=')
-      @attributes.key?(attr) || super
+      @attributes.key?(attr) || self.class.attribute_types.key?(attr) || super
     end
 
     def save # rubocop:disable Naming/PredicateMethod

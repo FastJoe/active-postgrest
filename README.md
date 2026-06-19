@@ -31,6 +31,8 @@ The library is tested against PostgREST 12. It should work with PostgREST 10+ fo
 
 ## Installation
 
+Requires Ruby 3.2+.
+
 ```ruby
 gem "active_postgrest", "~> 0.2"
 ```

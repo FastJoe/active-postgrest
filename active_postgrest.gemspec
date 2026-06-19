@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email       = ["evgeny.sokolov@gmail.com"]
   s.homepage    = "https://github.com/FastJoe/active-postgrest"
   s.license     = "Apache-2.0"
-  s.required_ruby_version = ">= 3.0"
+  s.required_ruby_version = ">= 3.2"
   s.signing_key = File.expand_path("~/.gem/gem-private_key.pem") if File.exist?(File.expand_path("~/.gem/gem-private_key.pem"))
   s.cert_chain  = ["certs/gem-public_cert.pem"]
   s.files       = Dir["lib/**/*"] + ["LICENSE", "certs/gem-public_cert.pem"]
