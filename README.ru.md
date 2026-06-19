@@ -378,17 +378,15 @@ User.count(:estimated)  # :estimated — из pg_class.reltuples, мгновен
 
 Используйте `:exact` (по умолчанию) когда число должно быть точным. Используйте `:planned` для пагинации, где достаточно приблизительной оценки. Используйте `:estimated` для счётчиков на дашборде с таблицами из миллионов строк.
 
-`any?`, `none?`, `one?`, `many?` всегда используют `:exact`.
+`any?`, `none?`, `exists?` используют HEAD-запрос — без тела, без count. `one?`, `many?` используют `LIMIT 2`.
 
 ### Агрегаты по столбцам
 
-Возвращают скалярное значение (строку, как возвращает PostgREST JSON). При необходимости приведите тип явно.
-
 ```ruby
-User.average(:age)                # => "32.4"
-User.sum(:score)                  # => "15000"
-User.minimum(:age)                # => "18"
-User.maximum(:age)                # => "75"
+User.average(:age)                # => BigDecimal("32.4")
+User.sum(:score)                  # => 15000
+User.minimum(:age)                # => 18
+User.maximum(:age)                # => 75
 
 # Фильтры учитываются
 User.where(active: true).average(:age)
@@ -635,6 +633,8 @@ User.where(active: true).explain
 | Класс | HTTP | Когда возникает |
 |---|---|---|
 | `ActivePostgrest::RecordNotFound`      | —    | `find!` или `find_by!` не нашли записей |
+| `ActivePostgrest::RecordNotSaved`      | —    | `create!` когда PostgREST вернул пустое тело |
+| `ActivePostgrest::CountNotAvailable`   | —    | `count`, `any?`, `none?`, `one?`, `many?` когда PostgREST подавляет `Content-Range` |
 | `ActivePostgrest::BadRequest`          | 400  | Некорректный запрос или фильтр |
 | `ActivePostgrest::Unauthorized`        | 401  | Отсутствует или недействительный JWT токен |
 | `ActivePostgrest::Forbidden`           | 403  | Роль не имеет прав (RLS / GRANT) |
@@ -654,7 +654,7 @@ User.where(active: true).explain
 - **Нет ленивой загрузки ассоциаций** — ассоциации работают только когда данные встроены в ответ через `joins` / `embed` / `with_*`. Автоматической подгрузки `user.company` нет.
 - **`to_sql`** — восстанавливает приближённую SQL-строку из состояния relation без обращения к БД. Использует нотацию встраивания PostgREST (`companies!inner(*)`) вместо настоящих SQL JOIN, и показывает литеральные значения вместо плейсхолдеров `$1`. Используйте `explain` для реального плана выполнения.
 - **`explain`** — требует PostgREST ≥ 10.
-- **`count`** зависит от заголовка `Content-Range`. Если PostgREST настроен его подавлять, `count` вызывает `CountNotAvailable`. Режимы `:planned` и `:estimated` возвращают приближённые значения и работают быстрее, но не подходят там, где важна точность.
+- **`count`, `any?`, `none?`, `one?`, `many?`** зависят от заголовка `Content-Range`. Если PostgREST настроен его подавлять, все пять вызывают `CountNotAvailable`. Режимы `:planned` и `:estimated` для `count` возвращают приближённые значения и работают быстрее, но не подходят там, где важна точность.
 
 ## Отличия от ActiveRecord
 
@@ -717,13 +717,6 @@ User.where("name ~ ?", "^A")
 # active_postgrest
 User.where(name: { match: "^A" })
 User.where(name: { imatch: "^a" })   # без учёта регистра
-```
-
-**Тип возврата агрегатов по столбцам** — AR's `average` возвращает `BigDecimal`, `sum`/`minimum`/`maximum` возвращают Ruby-тип столбца. Здесь все четыре возвращают `String` (JSON-значение PostgREST), при необходимости приведите тип явно:
-
-```ruby
-User.average(:age).to_f     # => 32.4
-User.sum(:score).to_i       # => 15000
 ```
 
 **`to_sql`** — AR возвращает реальный SQL, отправляемый в БД. Здесь восстанавливает приближённое представление из состояния relation без обращения к БД, но использует нотацию встраивания PostgREST вместо настоящих SQL JOIN:

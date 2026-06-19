@@ -488,19 +488,24 @@ RSpec.describe ActivePostgrest::Relation do
 
   describe '#exists?' do
     context 'when records exist' do
-      let(:response) { instance_double(Faraday::Response, headers: { 'content-range' => '0-9/5' }) }
+      let(:response) { instance_double(Faraday::Response, headers: { 'content-range' => '0-0/*' }) }
 
-      before { allow(client).to receive(:get).and_return(response) }
+      before { allow(client).to receive(:head).and_return(response) }
 
       it 'returns true' do
         expect(relation.exists?).to be true
       end
+
+      it 'sends HEAD with LIMIT 1' do
+        relation.exists?
+        expect(client).to have_received(:head).with('widgets', hash_including(limit: 1), schema: nil)
+      end
     end
 
     context 'when no records' do
-      let(:response) { instance_double(Faraday::Response, headers: { 'content-range' => '*/0' }) }
+      let(:response) { instance_double(Faraday::Response, headers: { 'content-range' => '*/*' }) }
 
-      before { allow(client).to receive(:get).and_return(response) }
+      before { allow(client).to receive(:head).and_return(response) }
 
       it 'returns false' do
         expect(relation.exists?).to be false
@@ -509,6 +514,101 @@ RSpec.describe ActivePostgrest::Relation do
 
     it 'returns false for none relation without HTTP call' do
       expect(relation.none.exists?).to be false
+    end
+  end
+
+  describe '#any? / #none? / #one? / #many?' do
+    context 'with records' do
+      let(:response) { instance_double(Faraday::Response, headers: { 'content-range' => '0-0/*' }) }
+
+      before { allow(client).to receive(:head).and_return(response) }
+
+      it '#any? returns true and sends HEAD with LIMIT 1' do
+        expect(relation.any?).to be true
+        expect(client).to have_received(:head).with('widgets', hash_including(limit: 1), schema: nil)
+      end
+
+      it '#none? returns false and sends HEAD with LIMIT 1' do
+        expect(relation.none?).to be false
+        expect(client).to have_received(:head).with('widgets', hash_including(limit: 1), schema: nil)
+      end
+    end
+
+    context 'with no records' do
+      let(:response) { instance_double(Faraday::Response, headers: { 'content-range' => '*/*' }) }
+
+      before { allow(client).to receive(:head).and_return(response) }
+
+      it '#any? returns false' do
+        expect(relation.any?).to be false
+      end
+
+      it '#none? returns true' do
+        expect(relation.none?).to be true
+      end
+    end
+
+    context 'when checking one? and many? with HEAD LIMIT 2' do
+      it '#one? returns true for exactly 1 record and sends HEAD' do
+        allow(client).to receive(:head).and_return(instance_double(Faraday::Response,
+                                                                   headers: { 'content-range' => '0-0/*' }))
+        expect(relation.one?).to be true
+        expect(client).to have_received(:head).with('widgets', hash_including(limit: 2), schema: nil)
+      end
+
+      it '#one? returns false when 2 records exist' do
+        allow(client).to receive(:head).and_return(instance_double(Faraday::Response,
+                                                                   headers: { 'content-range' => '0-1/*' }))
+        expect(relation.one?).to be false
+      end
+
+      it '#one? returns false when no records exist' do
+        allow(client).to receive(:head).and_return(instance_double(Faraday::Response,
+                                                                   headers: { 'content-range' => '*/*' }))
+        expect(relation.one?).to be false
+      end
+
+      it '#many? returns true when 2+ records exist and sends HEAD' do
+        allow(client).to receive(:head).and_return(instance_double(Faraday::Response,
+                                                                   headers: { 'content-range' => '0-1/*' }))
+        expect(relation.many?).to be true
+        expect(client).to have_received(:head).with('widgets', hash_including(limit: 2), schema: nil)
+      end
+
+      it '#many? returns false when only 1 record exists' do
+        allow(client).to receive(:head).and_return(instance_double(Faraday::Response,
+                                                                   headers: { 'content-range' => '0-0/*' }))
+        expect(relation.many?).to be false
+      end
+    end
+
+    context 'when Content-Range header is absent' do
+      let(:response) { instance_double(Faraday::Response, headers: {}) }
+
+      before { allow(client).to receive(:head).and_return(response) }
+
+      it 'raises CountNotAvailable for any?' do
+        expect { relation.any? }.to raise_error(ActivePostgrest::CountNotAvailable)
+      end
+
+      it 'raises CountNotAvailable for one?' do
+        expect { relation.one? }.to raise_error(ActivePostgrest::CountNotAvailable)
+      end
+
+      it 'raises CountNotAvailable for many?' do
+        expect { relation.many? }.to raise_error(ActivePostgrest::CountNotAvailable)
+      end
+    end
+
+    it '#any? with block delegates to Enumerable' do
+      allow(client).to receive(:get).and_return(instance_double(Faraday::Response, body: [{ 'id' => 1 }]))
+      expect(relation.any? { |r| r['id'] == 1 }).to be true
+    end
+
+    it '#many? with block delegates to Enumerable' do
+      allow(client).to receive(:get).and_return(instance_double(Faraday::Response,
+                                                                body: [{ 'id' => 1 }, { 'id' => 2 }]))
+      expect(relation.many? { |r| r['id'] > 0 }).to be true
     end
   end
 
@@ -521,34 +621,49 @@ RSpec.describe ActivePostgrest::Relation do
 
     before { allow(client).to receive(:get).and_return(response) }
 
-    it '#average sends select=age.avg() and returns the value' do
-      expect(relation.average(:age)).to eq('32.4')
+    it '#average sends select=age.avg() and returns BigDecimal' do
+      expect(relation.average(:age)).to eq(BigDecimal('32.4'))
       expect(client).to have_received(:get).with('widgets', hash_including(select: 'age.avg()'), schema: nil)
     end
 
-    it '#sum sends select=amount.sum()' do
+    it '#sum sends select=amount.sum() and returns Integer for whole number' do
       allow(client).to receive(:get).and_return(instance_double(Faraday::Response, body: [{ 'sum' => '1000' }]))
-      expect(relation.sum(:amount)).to eq('1000')
+      expect(relation.sum(:amount)).to eq(1000)
       expect(client).to have_received(:get).with('widgets', hash_including(select: 'amount.sum()'), schema: nil)
     end
 
-    it '#minimum sends select=age.min()' do
+    it '#minimum sends select=age.min() and returns Integer' do
       allow(client).to receive(:get).and_return(instance_double(Faraday::Response, body: [{ 'min' => '18' }]))
-      expect(relation.minimum(:age)).to eq('18')
+      expect(relation.minimum(:age)).to eq(18)
     end
 
-    it '#maximum sends select=age.max()' do
+    it '#maximum sends select=age.max() and returns Integer' do
       allow(client).to receive(:get).and_return(instance_double(Faraday::Response, body: [{ 'max' => '75' }]))
-      expect(relation.maximum(:age)).to eq('75')
+      expect(relation.maximum(:age)).to eq(75)
     end
 
     it 'respects existing where filters' do
-      expect(relation.where(active: true).average(:age)).to eq('32.4')
+      expect(relation.where(active: true).average(:age)).to eq(BigDecimal('32.4'))
       expect(client).to have_received(:get).with('widgets', hash_including('active' => 'is.true'), schema: nil)
     end
 
     it 'returns nil for none relation without HTTP call' do
       expect(relation.none.average(:age)).to be_nil
+    end
+
+    it '#sum returns BigDecimal for scientific notation (float8 column)' do
+      allow(client).to receive(:get).and_return(instance_double(Faraday::Response, body: [{ 'sum' => '1e10' }]))
+      expect(relation.sum(:amount)).to eq(BigDecimal('1e10'))
+    end
+
+    it '#average returns BigDecimal for scientific notation with decimal point' do
+      allow(client).to receive(:get).and_return(instance_double(Faraday::Response, body: [{ 'avg' => '1.5e+6' }]))
+      expect(relation.average(:amount)).to eq(BigDecimal('1.5e+6'))
+    end
+
+    it 'returns raw value for non-numeric strings (e.g. date min/max)' do
+      allow(client).to receive(:get).and_return(instance_double(Faraday::Response, body: [{ 'min' => '2024-01-15' }]))
+      expect(relation.minimum(:created_at)).to eq('2024-01-15')
     end
   end
 

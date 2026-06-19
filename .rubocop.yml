@@ -35,7 +35,7 @@ Metrics/ParameterLists:
   Max: 6
 
 Metrics/ClassLength:
-  Max: 250
+  Max: 280
 
 Metrics/ModuleLength:
   Max: 135

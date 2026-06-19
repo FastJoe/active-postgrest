@@ -379,17 +379,15 @@ User.count(:estimated)  # :estimated — from pg_class.reltuples, near-instant
 
 Use `:exact` (default) when the number must be precise. Use `:planned` for paginated UIs where an estimate per-query is good enough. Use `:estimated` for dashboard counters on tables with millions of rows where a rough total suffices.
 
-`any?`, `none?`, `one?`, `many?` always use `:exact`.
+`any?`, `none?`, `exists?` use a HEAD request — no count, no response body. `one?`, `many?` use `LIMIT 2`.
 
 ### Column aggregates
 
-Returns a scalar value (string, as returned by PostgREST JSON). Cast explicitly if needed.
-
 ```ruby
-User.average(:age)                # => "32.4"
-User.sum(:score)                  # => "15000"
-User.minimum(:age)                # => "18"
-User.maximum(:age)                # => "75"
+User.average(:age)                # => BigDecimal("32.4")
+User.sum(:score)                  # => 15000
+User.minimum(:age)                # => 18
+User.maximum(:age)                # => 75
 
 # Filters are respected
 User.where(active: true).average(:age)
@@ -636,6 +634,8 @@ User.where(active: true).explain
 | Class                                  | HTTP | When raised                                         |
 |----------------------------------------|------|-----------------------------------------------------|
 | `ActivePostgrest::RecordNotFound`      | —    | `find!` or `find_by!` returns no results            |
+| `ActivePostgrest::RecordNotSaved`      | —    | `create!` when PostgREST returns no body            |
+| `ActivePostgrest::CountNotAvailable`   | —    | `count`, `any?`, `none?`, `one?`, `many?` when PostgREST suppresses `Content-Range` |
 | `ActivePostgrest::BadRequest`          | 400  | Malformed query or filter                           |
 | `ActivePostgrest::Unauthorized`        | 401  | Missing or invalid JWT token                        |
 | `ActivePostgrest::Forbidden`           | 403  | Role lacks permission (RLS / GRANT)                 |
@@ -655,7 +655,7 @@ All `ActivePostgrest::Error` subclasses expose `#http_status`, `#code`, `#detail
 - **No lazy association loading** — associations only work when the related data is embedded in the same response via `joins` / `embed` / `with_*`.
 - **`to_sql`** — reconstructs an approximate SQL string from the relation state, no database call needed. It uses PostgREST embed notation (`companies!inner(*)`) rather than real SQL joins, and shows literal values instead of `$1`-style placeholders. Use `explain` to see the actual execution plan.
 - **`explain`** — requires PostgREST ≥ 10.
-- **`count`** relies on the `Content-Range` header. If PostgREST is configured to suppress it, `count` raises `CountNotAvailable`. `:planned` and `:estimated` modes return approximate values and are faster but not suitable where precision matters.
+- **`count`, `any?`, `none?`, `one?`, `many?`** rely on the `Content-Range` header. If PostgREST is configured to suppress it, all five raise `CountNotAvailable`. `:planned` and `:estimated` modes for `count` return approximate values and are faster but not suitable where precision matters.
 
 ## Differences from ActiveRecord
 
@@ -718,13 +718,6 @@ User.where("name ~ ?", "^A")
 # active_postgrest
 User.where(name: { match: "^A" })
 User.where(name: { imatch: "^a" })   # case-insensitive
-```
-
-**Column aggregate return type** — AR's `average` returns `BigDecimal`, `sum`/`minimum`/`maximum` return the column's Ruby type. Here all four return a `String` (PostgREST JSON value), cast explicitly if needed:
-
-```ruby
-User.average(:age).to_f     # => 32.4
-User.sum(:score).to_i       # => 15000
 ```
 
 **`to_sql`** — AR returns the actual SQL sent to the database. Here it reconstructs an approximate representation from the relation's state — no database call, but uses PostgREST embed notation instead of real SQL JOINs:

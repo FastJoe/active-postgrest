@@ -155,16 +155,44 @@ module ActivePostgrest
       total.to_i
     end
 
-    def any?(&block)    = block ? super : count.positive?
-    def none?(&block)   = block ? super : count.zero?
-    def one?(&block)    = block ? super : count == 1
-    def many?           = count > 1
-    def exists?         = any?
+    def any?(&block)
+      if block
+        super
+      else
+        (@null ? false : head_has_rows?)
+      end
+    end
 
-    def average(col)  = aggregate_value("#{col}.avg()", 'avg')
-    def sum(col)      = aggregate_value("#{col}.sum()", 'sum')
-    def minimum(col)  = aggregate_value("#{col}.min()", 'min')
-    def maximum(col)  = aggregate_value("#{col}.max()", 'max')
+    def none?(&block)
+      if block
+        super
+      else
+        (@null ? true : !head_has_rows?)
+      end
+    end
+
+    def one?(&block)
+      if block
+        super
+      else
+        (@null ? false : head_count_up_to(2) == 1)
+      end
+    end
+
+    def many?(&block)
+      if block
+        to_a.count(&block) > 1
+      else
+        (@null ? false : head_count_up_to(2) > 1)
+      end
+    end
+
+    def exists? = any?
+
+    def average(col) = coerce_numeric(aggregate_value("#{col}.avg()", 'avg'))
+    def sum(col)     = coerce_numeric(aggregate_value("#{col}.sum()", 'sum'))
+    def minimum(col) = coerce_numeric(aggregate_value("#{col}.min()", 'min'))
+    def maximum(col) = coerce_numeric(aggregate_value("#{col}.max()", 'max'))
 
     def pluck(*cols)
       return [] if @null
@@ -275,6 +303,25 @@ module ActivePostgrest
           merge_filter!(col.to_s, encoded) unless encoded.nil?
         end
       end
+    end
+
+    def head_count_up_to(limit)
+      range = @client.head(@table, build_params.merge(limit: limit), schema: @schema)
+                     .headers['content-range']
+      raise CountNotAvailable, 'Content-Range header missing from HEAD response' if range.nil?
+      return 0 if range.start_with?('*')
+
+      range[/\A\d+-(\d+)/, 1].to_i + 1
+    end
+
+    def head_has_rows? = head_count_up_to(1).positive?
+
+    def coerce_numeric(value)
+      return value unless value.is_a?(String)
+
+      value.match?(/\A-?\d+\z/) ? Integer(value) : BigDecimal(value)
+    rescue ArgumentError
+      value
     end
 
     def aggregate_value(expr, key)

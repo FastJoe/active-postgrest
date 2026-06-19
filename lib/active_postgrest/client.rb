@@ -34,6 +34,15 @@ module ActivePostgrest
       end.body
     end
 
+    def head(resource, params = {}, schema: nil)
+      response = @conn.head(resource, params) do |req|
+        auth_headers(req)
+        req.headers['Accept-Profile'] = schema if schema
+      end
+      raise_on_error!(response)
+      response
+    end
+
     def get(resource, params = {}, count: :exact, schema: nil)
       response = @conn.get(resource, params) do |req|
         auth_headers(req)
